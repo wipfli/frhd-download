@@ -25,3 +25,7 @@ Some files might have blank NODATA rectangles. Check for those and re-download t
 ```bash
 uv run python check_blank_tiles.py
 ```
+
+## File Lists Folder
+
+The file lists folder is too big to be checked into GitHub. Download it instead from https://github.com/wipfli/frhd-download/releases/tag/v0.0.1 etc.
