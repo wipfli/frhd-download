@@ -5,3 +5,7 @@ frhd5490/
 .venv/
 run.sh
 source-store/
+blank-checks/
+checks/
+__pycache__/
+file-lists/

@@ -54,26 +54,67 @@ def fetch_all_features():
     print(f"\nTotal features fetched: {total_fetched}")
 
 
+def get_group(filename):
+    parts = filename.split('_')
+    x = int(parts[2])
+    y = int(parts[3])
+    is_corsica = (x >= 1156)
+    is_left = (x < 686)
+    is_bottom = (y < 6584)
+
+    if is_corsica:
+        return 'e'
+    if is_left:
+        if is_bottom:
+            return 'c'
+        else:
+            return 'a'
+    else:
+        if is_bottom:
+            return 'd'
+        else:
+            return 'b'
+
 def check_crses():
     features = []
     with open('frhd_features.json') as f:
         features = json.load(f)
-    crs_to_features = {}
+
+    source_to_features = {
+        'frhd2975': [],
+        'frhd5490': [],
+        'frhd2154a': [],
+        'frhd2154b': [],
+        'frhd2154c': [],
+        'frhd2154d': [],
+        'frhd2154e': [],
+    }
+
     for feature in features:
         crs = feature['properties']['projection']
-        if crs not in crs_to_features:
-            crs_to_features[crs] = []
-        crs_to_features[crs].append(feature)
-    
-    for crs in crs_to_features.keys():
+        source = None
+        if crs == 'EPSG:2154':
+            group = get_group(feature['properties']['name'])
+            source = f'frhd2154{group}'
+        else:
+            source = f'frhd{crs.replace("EPSG:", "")}'
+        source_to_features[source].append(feature)
+
+    for source in source_to_features.keys():
         lines = []
-        for feature in crs_to_features[crs]:
-            lines.append(f'{feature["properties"]["name_download"]},{feature["properties"]["url"]}')
+        known_names = set()
+        for feature in source_to_features[source]:
+            name = feature['properties']['name_download']
+            if name in known_names:
+                continue
+            known_names.add(name)
+            lines.append(f'{name} {feature["properties"]["url"]}')
         lines.sort()
-        folder = f'frhd{crs.replace("EPSG:", "")}'
-        os.makedirs(folder, exist_ok=True)
-        with open(f'{folder}/files.csv', 'w') as f:
+        os.makedirs(source, exist_ok=True)
+        with open(f'file-lists/{source}/files.csv', 'w') as f:
             f.write('\n'.join(lines))
+        with open(f'file-lists/{source}/files.geojson', 'w') as f:
+            json.dump({'type': 'FeatureCollection', 'features': source_to_features[source]}, f, indent=2)
     
 
 if __name__ == "__main__":
