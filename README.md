@@ -1,6 +1,7 @@
 # frhd-download
-Downlaod script to download the full IGN LiDAR HD MNT datasets as GeoTiffs
+Download script to download the full IGN LiDAR HD MNT datasets as GeoTiffs
 
+## Get The Files
 Run in a loop until you have all files:
 
 ```bash
@@ -25,6 +26,25 @@ Some files might have blank NODATA rectangles. Check for those and re-download t
 ```bash
 uv run python check_blank_tiles.py
 ```
+
+## Make a Mapterhorn Source Tarball
+
+```bash
+git submodule init --recursive
+```
+
+Once those files look good, create bounds.csv files with:
+
+```bash
+uv run python source_bounds.py frhd2154a
+uv run python source_bounds.py frhd2154b
+uv run python source_bounds.py frhd2154c
+uv run python source_bounds.py frhd2154d
+uv run python source_bounds.py frhd2154e
+uv run python source_bounds.py frhd2975
+uv run python source_bounds.py frhd5490
+```
+
 
 ## File Lists Folder
 
